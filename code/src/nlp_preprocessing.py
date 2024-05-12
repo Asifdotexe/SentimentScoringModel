@@ -138,3 +138,27 @@ def get_sentiment_label(score):
         return 'negative'
     else:
         return 'neutral'
+
+def get_opinion_lexicion_sentiment_score(text):
+    """
+        This method returns the sentiment score of a given text using nltk opinion lexicon
+    """
+    # initialising score
+    total_score = 0
+    # breaking down reviews into sentences
+    raw_sentences = sent_tokenize(text)
+    
+    for sentence in raw_sentences:
+        sentence_score = 0
+        sentence = str(sentence)
+        sentence = sentence.replace('<br/>','')\
+                            .translate(str.maketrans('','',punctuation)).lower()
+        tokens = TreebankWordTokenizer().tokenize(text)
+        
+        for token in tokens:
+            sentence_score = sentence_score + 1 if token in pos_words else \
+                (sentence_score - 1 if token in negative_words else \
+                    sentence_score)
+        total_score = total_score + (sent_score / len(tokens))
+        
+    return total_score 
