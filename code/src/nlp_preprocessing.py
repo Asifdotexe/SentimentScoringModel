@@ -127,3 +127,14 @@ def get_sentiment_score(text):
 
     
     return (total_score / len(raw_sentences)) * 100
+
+def get_sentiment_label(score):
+    """
+    Assign sentiment label based on the given score.
+    """
+    if score > 1:
+        return 'positive'
+    elif score < -1:
+        return 'negative'
+    else:
+        return 'neutral'
