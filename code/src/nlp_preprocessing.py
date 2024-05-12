@@ -82,3 +82,44 @@ def get_lemmas(tokens):
                 # Append the lemma to the list of lemmas
                 lemmas.append(lemma)
     return lemmas
+
+def get_sentiment_score(tokens):
+    """
+    Calculate sentiment score for a list of tokens.
+
+    Parameters:
+    - tokens (list): List of tokens representing words.
+
+    Returns:
+    - score (float): Sentiment score calculated based on the tokens.
+    """
+
+    # Define score default as zero
+    score = 0
+    # Tag individual tokens with their part of speech
+    tags = pos_tag(tokens)
+    
+    # Iterate through each token and its corresponding tag
+    for word, tag in tags:
+        
+        # Convert Penn Treebank tag to WordNet tag
+        wordnet_tag = penn_to_wn(tag)
+        # If WordNet tag is not found, skip to the next token
+        if not wordnet_tag:
+            continue
+        
+        # Get synsets (sets of synonyms) for the word with the specified POS tag
+        synsets = wn.synsets(word, pos=wordnet_tag)
+        # If no synsets are found, skip to the next token
+        if not synsets:
+            continue
+        
+        # Select the most common synset
+        synset = synsets[0]
+        # Get sentiment score for the synset using SentiWordNet
+        sentiwordnet_synset = swn.senti_synset(synset.name())
+        
+        # Update the score by adding the difference between positive and negative scores
+        score += (sentiwordnet_synset.pos_score() - sentiwordnet_synset.neg_score())
+        
+    return score
