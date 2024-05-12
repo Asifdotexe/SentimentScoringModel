@@ -3,6 +3,12 @@ import re  # for regex
 from nltk.corpus import wordnet as wn
 from nltk.corpus import sentiwordnet as swn
 from nltk import pos_tag
+from nltk.tokenize import sent_tokenize, TreebankWordTokenizer
+from nltk.corpus import wordnet as wn
+from nltk.corpus import sentiwordnet as swn
+from nltk import pos_tag
+from nltk.stem import WordNetLemmatizer
+from string import punctuation
 
 def clean_html_column(dataframe, column_name, new_column_name):
     """
@@ -83,43 +89,41 @@ def get_lemmas(tokens):
                 lemmas.append(lemma)
     return lemmas
 
-def get_sentiment_score(tokens):
-    """
-    Calculate sentiment score for a list of tokens.
-
-    Parameters:
-    - tokens (list): List of tokens representing words.
-
-    Returns:
-    - score (float): Sentiment score calculated based on the tokens.
-    """
-
-    # Define score default as zero
-    score = 0
-    # Tag individual tokens with their part of speech
-    tags = pos_tag(tokens)
+def get_sentiment_score(text):
     
-    # Iterate through each token and its corresponding tag
-    for word, tag in tags:
-        
-        # Convert Penn Treebank tag to WordNet tag
-        wordnet_tag = penn_to_wn(tag)
-        # If WordNet tag is not found, skip to the next token
-        if not wordnet_tag:
-            continue
-        
-        # Get synsets (sets of synonyms) for the word with the specified POS tag
-        synsets = wn.synsets(word, pos=wordnet_tag)
-        # If no synsets are found, skip to the next token
-        if not synsets:
-            continue
-        
-        # Select the most common synset
-        synset = synsets[0]
-        # Get sentiment score for the synset using SentiWordNet
-        sentiwordnet_synset = swn.senti_synset(synset.name())
-        
-        # Update the score by adding the difference between positive and negative scores
-        score += (sentiwordnet_synset.pos_score() - sentiwordnet_synset.neg_score())
-        
-    return score
+    """
+        This method returns the sentiment score of a given text using SentiWordNet sentiment scores.
+        input: text
+        output: numeric (double) score, >0 means positive sentiment and <0 means negative sentiment.
+    """    
+    total_score = 0
+    #print(text)
+    raw_sentences = sent_tokenize(text)
+    #print(raw_sentences)
+    
+    for sentence in raw_sentences:
+
+        sent_score = 0     
+        sentence = str(sentence)
+        #print(sentence)
+        sentence = sentence.replace("<br />"," ").translate(str.maketrans('','',punctuation)).lower()
+        tokens = TreebankWordTokenizer().tokenize(text)
+        tags = pos_tag(tokens)
+        for word, tag in tags:
+            wn_tag = penn_to_wn(tag)
+            if not wn_tag:
+                continue
+            lemma = WordNetLemmatizer().lemmatize(word, pos=wn_tag)
+            if not lemma:
+                continue
+            synsets = wn.synsets(lemma, pos=wn_tag)
+            if not synsets:
+                continue
+            synset = synsets[0]
+            swn_synset = swn.senti_synset(synset.name())
+            sent_score += swn_synset.pos_score() - swn_synset.neg_score()
+
+        total_score = total_score + (sent_score / len(tokens))
+
+    
+    return (total_score / len(raw_sentences)) * 100
