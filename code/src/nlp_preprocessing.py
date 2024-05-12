@@ -2,10 +2,7 @@ import pandas as pd
 import re  # for regex
 from nltk.corpus import wordnet as wn
 from nltk.corpus import sentiwordnet as swn
-
-# nltk.download('wordnet')
-# nltk.download('averaged_perceptron_tagger')
-pd.set_option('display.max_colwidth', None)
+from nltk import pos_tag
 
 def clean_html_column(dataframe, column_name, new_column_name):
     """
