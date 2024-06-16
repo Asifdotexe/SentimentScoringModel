@@ -4,6 +4,10 @@
 
 This project focuses on performing sentiment analysis on Amazon reviews using natural language processing (NLP) techniques. It includes various steps, from data exploration and preprocessing to building and evaluating sentiment models.
 
+## Problem Statement
+
+Sentiment analysis of Amazon reviews presents challenges due to the varying lengths and styles of reviews, as well as the need to accurately capture nuanced sentiments expressed in text. The project aims to develop robust models that can effectively analyze sentiment and provide valuable insights from customer reviews.
+
 ## Notebooks
 
 ### 1. Dataset Creation (Notebook 1/6)
@@ -69,3 +73,6 @@ This notebook includes:
 
 5. **Contributing:**
 Contributions are welcome! Please open an issue or submit a pull request for any changes or improvements.
+
+## Conclusion
+This project demonstrates effective techniques for sentiment analysis on Amazon reviews using NLP methodologies. The developed models provide insights into customer sentiments, aiding in understanding product reception and identifying areas for improvement. Contributions and further enhancements are encouraged to refine and expand the capabilities of sentiment analysis in real-world applications.
