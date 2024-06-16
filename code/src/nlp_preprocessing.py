@@ -132,9 +132,9 @@ def get_sentiment_label(score):
     """
     Assign sentiment label based on the given score.
     """
-    if score > 1:
+    if score > 0:
         return 'positive'
-    elif score < -1:
+    elif score < 0:
         return 'negative'
     else:
         return 'neutral'
@@ -156,9 +156,7 @@ def get_opinion_lexicion_sentiment_score(text):
         tokens = TreebankWordTokenizer().tokenize(text)
         
         for token in tokens:
-            sentence_score = sentence_score + 1 if token in pos_words else \
-                (sentence_score - 1 if token in negative_words else \
-                    sentence_score)
+            sentence_score = sentence_score + 1 if token in pos_words else (sentence_score - 1 if token in negative_words else sentence_score)
         total_score = total_score + (sent_score / len(tokens))
         
     return total_score 
