@@ -132,14 +132,12 @@ def get_sentiment_label(score):
     """
     Assign sentiment label based on the given score.
     """
-    if score >= 1:
+    if score > 0:
         return 'positive'
-    elif score <= -1:
+    elif score < 0:
         return 'negative'
-    elif score == 0:
-        return 'neutral'
     else:
-        return 'neutral'  # Handles scores between -1 and 1, excluding 0
+        return 'neutral'
 
 def get_opinion_lexicion_sentiment_score(text):
     """
