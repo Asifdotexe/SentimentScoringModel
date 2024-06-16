@@ -9,8 +9,9 @@ from nltk.corpus import sentiwordnet as swn
 from nltk import pos_tag
 from nltk.stem import WordNetLemmatizer
 from string import punctuation
+from typing import List
 
-def clean_html_column(dataframe, column_name, new_column_name):
+def clean_html_column(dataframe: pd.DataFrame, column_name: str, new_column_name: str) -> pd.DataFrame:
     """
     Remove HTML tags from the text in the specified column of the DataFrame
     and create a new column with the cleaned text.
@@ -24,7 +25,7 @@ def clean_html_column(dataframe, column_name, new_column_name):
     - dataframe (DataFrame): The DataFrame with the new column added, containing the cleaned text.
     """
 
-    def remove_html_tags(text):
+    def remove_html_tags(text: str) -> str:
         """
         Remove HTML tags from the input text using regex.
 
@@ -44,7 +45,7 @@ def clean_html_column(dataframe, column_name, new_column_name):
     dataframe[new_column_name] = dataframe[column_name].apply(remove_html_tags)
     return dataframe
 
-def penn_to_wn(tag):
+def penn_to_wn(tag: str) -> str:
     """
     Convert between a Penn Treebank tag to a simplified Wordnet tag.
 
@@ -64,7 +65,7 @@ def penn_to_wn(tag):
         return wn.VERB
     return None
 
-def get_lemmas(tokens):
+def get_lemmas(tokens: List[str]) -> List[str]:
     """
     Get lemmas for a list of tokens.
 
@@ -89,12 +90,20 @@ def get_lemmas(tokens):
                 lemmas.append(lemma)
     return lemmas
 
-def get_sentiment_score(text):
-    
+def get_sentiment_score(text: str) -> float:
     """
-        This method returns the sentiment score of a given text using SentiWordNet sentiment scores.
-        input: text
-        output: numeric (double) score, >0 means positive sentiment and <0 means negative sentiment.
+    This function calculates the sentiment score of a given text.
+    
+    Parameters:
+    - text (str): The input text for which the sentiment score needs to be calculated.
+    
+    Returns:
+    - float: The sentiment score of the input text, which is a percentage value between 0 and 100.
+    
+    Description:
+    - The function works by tokenizing the input text into sentences, then further tokenizing each sentence into words. It then uses the WordNetLemmatizer to lemmatize each word and the Penn Treebank POS tagger to tag each word with its part of speech.
+    - For each word, it looks up its synsets (sets of synonyms) in WordNet and selects the first one. It then retrieves the corresponding SentiWordNet synset and calculates the sentiment score as the difference between its positive and negative scores.
+    - The sentiment scores of all words in a sentence are summed up and divided by the number of words in the sentence to obtain the sentence-level sentiment score. The sentiment scores of all sentences in the input text are then averaged and multiplied by 100 to obtain the final sentiment score of the input text.
     """    
     total_score = 0
     #print(text)
@@ -128,9 +137,15 @@ def get_sentiment_score(text):
     
     return (total_score / len(raw_sentences)) * 100
 
-def get_sentiment_label(score):
+def get_sentiment_label(score: float) -> str:
     """
     Assign sentiment label based on the given score.
+
+    Parameters:
+    - score (float): The sentiment score of the input text, which is a percentage value between 0 and 100.
+
+    Returns:
+    - str: A string representing the sentiment label. The function returns 'positive' if the score is greater than 0, 'negative' if the score is less than 0, and 'neutral' if the score is equal to 0.
     """
     if score > 0:
         return 'positive'
@@ -139,9 +154,19 @@ def get_sentiment_label(score):
     else:
         return 'neutral'
 
-def get_opinion_lexicion_sentiment_score(text):
+def get_opinion_lexicion_sentiment_score(text: str) -> float:
     """
-        This method returns the sentiment score of a given text using nltk opinion lexicon
+    This method returns the sentiment score of a given text using nltk opinion lexicon.
+
+    Parameters:
+    - text (str): The input text for which the sentiment score needs to be calculated.
+
+    Returns:
+    - float: The sentiment score of the input text, which is a percentage value between 0 and 100.
+
+    Description:
+    - The function works by breaking down the input text into sentences, then further tokenizing each sentence into words. It then uses the predefined lists of positive and negative words to calculate the sentiment score of each sentence.
+    - The sentiment scores of all sentences in the input text are then averaged and multiplied by 100 to obtain the final sentiment score of the input text.
     """
     # initialising score
     total_score = 0
@@ -151,8 +176,8 @@ def get_opinion_lexicion_sentiment_score(text):
     for sentence in raw_sentences:
         sentence_score = 0
         sentence = str(sentence)
-        sentence = sentence.replace('<br/>','')\
-                            .translate(str.maketrans('','',punctuation)).lower()
+        sentence = sentence.replace('<br />', '')\
+                            .translate(str.maketrans('', '', punctuation)).lower()
         tokens = TreebankWordTokenizer().tokenize(text)
         
         for token in tokens:
