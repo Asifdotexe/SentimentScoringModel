@@ -155,3 +155,38 @@ def sentiment_score_analysis(df: pd.DataFrame) -> pd.DataFrame:
     plt.xlabel('Overall Rating')
     plt.ylabel('Frequencies of labels')
     plt.show()
+
+def SentiScore(file_path: str, rating_column: str, review_column: str, text_processing_method: str='stem') -> None:
+    """
+    This function is the entry point for the sentiment analysis pipeline. It reads data from a file, performs class rebalancing, applies data preprocessing, applies sentiment analysis, and visualizes the sentiment scores.
+
+    Parameters:
+    - file_path (str): The path to the file containing the data to be processed.
+    - rating_column (str): The name of the column in the DataFrame that contains the rating values.
+    - review_column (str): The name of the column in the DataFrame that contains the review text.
+    - text_processing_method (str, optional): A string representing the text processing method to be applied. Defaults to 'stem'.
+
+    Returns:
+    None. The function visualizes the sentiment scores using matplotlib and seaborn.
+
+    Raises:
+    - FileNotFoundError: If the file does not exist.
+    - ValueError: If the rating_column or review_column is not found in the input DataFrame.
+    - ValueError: If the text_processing_method is not 'stem' or 'lemma'.
+    """
+    print("Reading data...")
+    df = read_data(file_path)
+    
+    print("Performing class rebalancing...")
+    df = class_rebalancing(df, rating_column)
+    
+    print("Preprocessing data...")
+    df = data_preprocessing(df, review_column, text_processing_method)
+    
+    print("Applying sentiment analysis...")
+    df = opinion_lexicon(df)
+    
+    print("Analyzing sentiment scores...")
+    sentiment_score_analysis(df)
+    
+    print("Pipeline completed successfully.")
