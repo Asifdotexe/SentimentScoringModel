@@ -10,6 +10,11 @@ from src.nlp_preprocessing import clean_html_column
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 from src.nlp_preprocessing import get_lemmas
+from nltk.corpus import opinion_lexicon
+from sklearn.metrics import confusion_matrix
+from src.nlp_preprocessing import get_opinion_lexicion_sentiment_score
+from nltk.tokenize import sent_tokenize, TreebankWordTokenizer
+# nltk.download('opinion_lexicon')
 
 def read_data(file_path: str) -> pd.DataFrame:
     """
@@ -113,4 +118,40 @@ def data_preprocessing(df: pd.DataFrame, review_column: str, text_processing_met
 
     return df
         
-        
+def opinion_lexicon(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This function applies sentiment analysis to the given DataFrame using the opinion_lexicon library.
+    It retrieves the positive and negative words from the opinion_lexicon and calculates the sentiment score for each review.
+
+    Parameters:
+    - df (pd.DataFrame): The input DataFrame containing the data to be processed.
+
+    Returns:
+    - pd.DataFrame: The DataFrame with additional columns 'cleaned_review' and 'sentiment_score'.
+
+    Raises:
+    - ValueError: If the 'cleaned_review' column is not found in the input DataFrame.
+    """
+    positive_words = list(opinion_lexicon.positive())
+    negative_words = list(opinion_lexicon.negative())
+
+    df['cleaned_review'] = df['cleaned_review'].astype(str)
+    df['sentiment_score'] = df['cleaned_review'].apply(lambda x:
+        get_opinion_lexicion_sentiment_score(x))
+
+    return df
+
+def sentiment_score_analysis(df: pd.DataFrame) -> pd.DataFrame:
+    df['sentiment_score'].hist()
+    plt.axvline(df['sentiment_score'].mean(), color='red', linestyle='--')
+    plt.axvline(df['sentiment_score'].median(), color='green')
+    plt.legend({'Mean': df['sentiment_score'].mean(), 'Median':df['sentiment_score'].median()})
+    plt.title('Distribution of sentiment scores across the dataset (Oplex)')
+    plt.yscale('log')
+    plt.show()
+    
+    sns.countplot(x='overall', hue='sentiment_labels', data=df)
+    plt.title('Frequencies of sentiment for each rating')
+    plt.xlabel('Overall Rating')
+    plt.ylabel('Frequencies of labels')
+    plt.show()
