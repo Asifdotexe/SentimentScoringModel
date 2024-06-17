@@ -7,6 +7,7 @@ from nltk.tokenize import sent_tokenize, TreebankWordTokenizer
 from nltk.corpus import wordnet as wn
 from nltk.corpus import sentiwordnet as swn
 from nltk import pos_tag
+from nltk.corpus import opinion_lexicon
 from nltk.stem import WordNetLemmatizer
 from string import punctuation
 from typing import List
@@ -173,6 +174,9 @@ def get_opinion_lexicion_sentiment_score(text: str) -> float:
     # breaking down reviews into sentences
     raw_sentences = sent_tokenize(text)
     
+    positive_words = list(opinion_lexicon.positive())
+    negative_words = list(opinion_lexicon.negative())
+    
     for sentence in raw_sentences:
         sentence_score = 0
         sentence = str(sentence)
@@ -181,7 +185,7 @@ def get_opinion_lexicion_sentiment_score(text: str) -> float:
         tokens = TreebankWordTokenizer().tokenize(text)
         
         for token in tokens:
-            sentence_score = sentence_score + 1 if token in pos_words else (sentence_score - 1 if token in negative_words else sentence_score)
-        total_score = total_score + (sent_score / len(tokens))
+            sentence_score = sentence_score + 1 if token in positive_words else (sentence_score - 1 if token in negative_words else sentence_score)
+        total_score = total_score + (sentence_score / len(tokens))
         
     return total_score 

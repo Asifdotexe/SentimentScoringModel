@@ -1,3 +1,4 @@
+import nltk
 import ndjson
 import pandas as pd
 import numpy as np
@@ -97,12 +98,12 @@ def data_preprocessing(df: pd.DataFrame, review_column: str, text_processing_met
     - ValueError: If the review_column is not found in the input DataFrame.
     - ValueError: If the text_processing_method is not 'stem' or 'lemma'.
     """
-    df = clean_html_column(df, review_column, 'clean_review')
+    df = clean_html_column(df, review_column, 'cleaned_review')
 
-    df['clean_review'] = df['clean_review'].apply(lambda review:
-        str(review).translate(str.maketranslate('', '', punctuation)).lower())
+    df['cleaned_review'] = df['cleaned_review'].apply(lambda review: 
+        str(review).translate(str.maketrans('','',punctuation)).lower())
 
-    df['tokens'] = df['clean_review'].apply(lambda review:
+    df['tokens'] = df['cleaned_review'].apply(lambda review:
         casual_tokenize(str(review)))
 
     if text_processing_method == 'stem':
@@ -132,8 +133,6 @@ def opinion_lexicon(df: pd.DataFrame) -> pd.DataFrame:
     Raises:
     - ValueError: If the 'cleaned_review' column is not found in the input DataFrame.
     """
-    positive_words = list(opinion_lexicon.positive())
-    negative_words = list(opinion_lexicon.negative())
 
     df['cleaned_review'] = df['cleaned_review'].astype(str)
     df['sentiment_score'] = df['cleaned_review'].apply(lambda x:
