@@ -1,4 +1,4 @@
-# NLP Sentiment Analysis on Amazon Reviews
+# Sentiment Scoring Model
 
 ## Project Overview
 
